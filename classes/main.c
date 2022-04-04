@@ -28,8 +28,14 @@ int main(int argc, char **argv)
     struct show_eq_object x = {.show = (show_t)show_test, .eq = (eq_t)eq_test, .data = (void *)5};
     struct show_eq_object y = {.show = (show_t)show_test, .eq = (eq_t)eq_test, .data = (void *)7};
 
+    struct show_object a = {.show = (show_t)show_test, .data = (void*) 42};
+    struct show_object b = {.show = (show_t)show_test, .data = (void*) 1};
+
     foo_C_stub(x, y);
     foo_C_stub(x, x);
+
+    bar_C_stub(a);
+    bar_C_stub(b);
 
     caml_shutdown();
     hs_exit();

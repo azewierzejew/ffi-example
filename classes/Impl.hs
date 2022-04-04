@@ -13,3 +13,10 @@ foo x y =
     if x == y
       then printf "%s and %s are equal\n" sx sy
       else printf "%s and %s are not equal\n" sx sy
+
+
+bar :: ( ShowIO a) => a -> IO ()
+bar x =
+  do
+    sx <- showIO x
+    printf "Got: %s\n" sx

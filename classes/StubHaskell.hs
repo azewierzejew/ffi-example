@@ -91,4 +91,18 @@ fooHaskellStub xPtr yPtr = do
         }
     )
 
+barHaskellStub :: Ptr a -> IO ()
+barHaskellStub xPtr = do
+  xShow <- peekByteOff xPtr 0
+  let x = xPtr `plusPtr` 8
+  bar
+    ( CShow
+        { cShow =
+            xShow,
+          cShowValue = IdentityWrapper x
+        }
+    )
+
 foreign export ccall fooHaskellStub :: Ptr a -> Ptr b -> IO ()
+
+foreign export ccall barHaskellStub :: Ptr a -> IO ()

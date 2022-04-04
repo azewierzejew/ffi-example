@@ -10,4 +10,11 @@ module type Eq = sig
   val eq : t -> t -> bool
 end
 
-val foo : (module Show with type t = 't) -> (module Eq with type t = 't) -> 't -> 't -> unit
+val foo :
+  (module Show with type t = 't) ->
+  (module Eq with type t = 't) ->
+  't ->
+  't ->
+  unit
+
+val bar : (module Show with type t = 't) -> 't -> unit

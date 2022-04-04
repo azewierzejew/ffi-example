@@ -39,4 +39,8 @@ let _ =
   (* foo (module Integer) (module Integer) a y; *)
   foo (module Float) (module Float) a b;
   foo (module Float) (module Float) a a;
+  bar (module Integer) x;
+  bar (module Integer) y;
+  bar (module Float) a;
+  bar (module Float) b;
   ()
