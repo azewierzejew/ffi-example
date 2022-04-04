@@ -1,10 +1,9 @@
 PROG=test
-HASKELL_DEP=Makefile_haskell.d
-HASKELL_FILES=Impl.hs StubHaskell.hs
-C_DEP=Makefile_c.d
-C_FILES=main.c stub_ml_wrap.c stub.c
-OCAML_FILES=stub_ml.ml stub_ml.mli usage.ml
-OBJECT_FILES=$(C_FILES:.c=.o) caml.o camlruntime.a $(HASKELL_FILES:.hs=.o)
+DEPS=dep_haskell.d dep_c.d dep_ocaml.d
+HASKELL_FILES=$(wildcard *.hs)
+C_FILES=$(wildcard *.c)
+OCAML_FILES=stub_ml.mli stub_ml.ml usage.ml
+OBJECT_FILES=$(C_FILES:.c=.o) $(HASKELL_FILES:.hs=.o) ocaml_object.o
 
 .PHONY: all clean
 
@@ -16,10 +15,8 @@ all: $(PROG)
 %.o: %.c
 	gcc -c -std=c11 -Wall -Wextra -o $@ $< -I `ocamlc -where` -I /usr/lib/ghc-9.0.2/include
 
-caml.o: $(OCAML_FILES)
-	ocamlopt $(filter %.mli, $^)
-	ocamlopt -output-obj -o caml.o $(filter %.ml, $^)
-	ocamlc -c $(filter %.c, $^)
+ocaml_object.o: $(OCAML_FILES)
+	ocamlopt -output-obj -o $@ $^
 
 camlruntime.a: $(OCAML_FILES)
 	cp `ocamlopt -where`/libasmrun.a $@
@@ -34,16 +31,17 @@ clean:
 	-rm -f *.d.bak
 	-rm -f $(PROG)
 
-$(HASKELL_DEP): $(HASKELL_FILES)
+%_haskell.d: $(HASKELL_FILES)
 	ghc -M -dep-suffix=. -dep-makefile $@ $^
 
-include $(HASKELL_DEP)
-
-$(C_DEP): $(C_FILES)
+%_c.d: $(C_FILES)
 	rm -f $@
 	gcc -MM $^ >$@
 
-include $(C_DEP)
+%_ocaml.d: $(OCAML_FILES)
+	rm -f $@
+	ocamldep -all $^ $(^:.ml=.mli) >$@
+
 
 $(PROG): $(OBJECT_FILES)
 	@echo Linking program.
@@ -54,6 +52,7 @@ $(PROG): $(OBJECT_FILES)
 	-fno-PIC \
 	-o $@ \
 	$^ \
+	/usr/lib/ocaml/libasmrun.a \
 	-Wl,--gc-sections \
 	-L/usr/lib/ghc-9.0.2/base-4.15.1.0 \
 	-L/usr/lib/ghc-9.0.2/ghc-bignum-1.1 \
@@ -158,3 +157,5 @@ $(PROG): $(OBJECT_FILES)
 	-lpthread \
 	-lcurses
 
+
+include $(DEPS)
