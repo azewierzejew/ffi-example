@@ -1,23 +1,25 @@
 PROG=test
-OBJECT_FILES=main.o Safe.o mod.a
+DEPS=dep_haskell.d dep_c.d dep_ocaml.d
+HASKELL_FILES=$(wildcard *.hs)
+C_FILES=$(wildcard *.c)
+OCAML_FILES=mod.ml
+OBJECT_FILES=$(C_FILES:.c=.o) $(HASKELL_FILES:.hs=.o) ocaml_object.o
 
 .PHONY: all clean
 
 all: $(PROG)
 
-%.o: %.hs
-	ghc -c -no-keep-hi-files $^
+%.o %.hi %_stub.h: %.hs
+	ghc -c -no-keep-hi-files $<
 
 %.o: %.c
-	gcc -c -std=c11 -o $@ $^ -I `ocamlc -where` -I /usr/lib/ghc-9.0.2/include
+	gcc -c -std=c11 -Wall -Wextra -o $@ $< -I `ocamlc -where` -I /usr/lib/ghc-9.0.2/include
 
+ocaml_object.o: $(OCAML_FILES)
+	ocamlopt -output-obj -o $@ $^
 
-%.a: %.ml %_wrap.c
-	ocamlopt -output-obj -o $*caml.o $*.ml
-	ocamlc -c $*_wrap.c
-	cp `ocamlopt -where`/libasmrun.a $*.a
-	chmod +w $*.a
-	ar r $*.a $*caml.o $*_wrap.o
+camlruntime.a: $(OCAML_FILES)
+	cp `ocamlopt -where`/libasmrun.a $@
 
 clean:
 	-rm -f *.o
@@ -25,15 +27,37 @@ clean:
 	-rm -f *.cmi
 	-rm -f *.cmx
 	-rm -f *.a
+	-rm -f *.d
+	-rm -f *.d.bak
 	-rm -f $(PROG)
 
+ifneq ($(HASKELL_FILES),)
+%_haskell.d: $(HASKELL_FILES)
+	ghc -M -dep-suffix=. -dep-makefile $@ $^
+else
+%_haskell.d:
+	touch $@
+endif
+
+%_c.d: $(C_FILES)
+	rm -f $@
+	gcc -MM $^ >$@
+
+%_ocaml.d: $(OCAML_FILES)
+	rm -f $@
+	ocamldep -all $^ $(^:.ml=.mli) >$@
+
+
 $(PROG): $(OBJECT_FILES)
-	gcc \
+	@echo Linking program.
+	@echo Linked files: $^
+	@gcc \
 	-Wl,--no-as-needed \
 	-no-pie \
 	-fno-PIC \
 	-o $@ \
 	$^ \
+	/usr/lib/ocaml/libasmrun.a \
 	-Wl,--gc-sections \
 	-L/usr/lib/ghc-9.0.2/base-4.15.1.0 \
 	-L/usr/lib/ghc-9.0.2/ghc-bignum-1.1 \
@@ -137,3 +161,6 @@ $(PROG): $(OBJECT_FILES)
 	-lnuma \
 	-lpthread \
 	-lcurses
+
+
+include $(DEPS)

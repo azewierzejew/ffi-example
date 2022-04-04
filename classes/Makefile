@@ -31,8 +31,13 @@ clean:
 	-rm -f *.d.bak
 	-rm -f $(PROG)
 
+ifneq ($(HASKELL_FILES),)
 %_haskell.d: $(HASKELL_FILES)
 	ghc -M -dep-suffix=. -dep-makefile $@ $^
+else
+%_haskell.d:
+	touch $@
+endif
 
 %_c.d: $(C_FILES)
 	rm -f $@
