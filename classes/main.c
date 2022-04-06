@@ -1,20 +1,21 @@
+#include "stub.h"
 #include <stdio.h>
 #include <caml/callback.h>
+#include <caml/gc_ctrl.h>
 #include <HsFFI.h>
 #include <stdbool.h>
 #include <string.h>
-#include "stub.h"
 
-struct string_view *show_test(uintptr_t *x)
+// Implementation of Show for unboxed integers.
+alloc_string_ptr show_test(uintptr_t *x)
 {
-    const int buffer_size = 30;
-    char *buffer = malloc(buffer_size);
-    snprintf(buffer, buffer_size, "RAW %ld", *x);
-    struct string_view *result = malloc(sizeof(*result));
-    *result = (struct string_view){.len = strlen(buffer), .data = buffer};
-    return result;
+    const int buffer_size = 64;
+    char buffer[buffer_size];
+    snprintf(buffer, buffer_size, "RawInt (%ld)", *x);
+    return alloc_string_new(strlen(buffer), buffer);
 }
 
+// Implementation of Eq for unboxed integers.
 bool eq_test(uintptr_t *x, uintptr_t *y)
 {
     return *x == *y;
@@ -23,21 +24,26 @@ bool eq_test(uintptr_t *x, uintptr_t *y)
 int main(int argc, char **argv)
 {
     hs_init(&argc, &argv);
-    caml_startup(argv);
 
-    struct show_eq_object x = {.show = (show_t)show_test, .eq = (eq_t)eq_test, .data = (void *)5};
-    struct show_eq_object y = {.show = (show_t)show_test, .eq = (eq_t)eq_test, .data = (void *)7};
-
-    struct show_object a = {.show = (show_t)show_test, .data = (void*) 42};
-    struct show_object b = {.show = (show_t)show_test, .data = (void*) 1};
-
-    foo_C_stub(x, y);
-    foo_C_stub(x, x);
+    struct show_object a = {.show = (show_t)show_test, .data = (void *)123123123};
+    struct show_object b = {.show = (show_t)show_test, .data = (void *)1};
 
     bar_C_stub(a);
     bar_C_stub(b);
 
+    // Testing with unboxed integers.
+    struct show_eq_object x = {.show = (show_t)show_test, .eq = (eq_t)eq_test, .data = (void *)5};
+    struct show_eq_object y = {.show = (show_t)show_test, .eq = (eq_t)eq_test, .data = (void *)7};
+
+    foo_C_stub(x, y);
+    foo_C_stub(x, x);
+
+
+    // This runs OCaml "main" ('let _ = ...' syntax) functions.
+    caml_startup_pooled(argv);
+
     caml_shutdown();
+
     hs_exit();
 
     return 0;

@@ -1,3 +1,5 @@
+(** Interface for foreign stubs. *)
+
 module type Show = sig
   type t
 

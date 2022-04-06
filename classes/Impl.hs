@@ -1,22 +1,17 @@
+-- Haskell module with implementation
+
 module Impl where
 
 import Text.Printf (printf)
 
-class ShowIO a where
-  showIO :: a -> IO String
-
-foo :: (Eq a, ShowIO a) => a -> a -> IO ()
+foo :: (Eq a, Show a) => a -> a -> IO ()
 foo x y =
   do
-    sx <- showIO x
-    sy <- showIO y
     if x == y
-      then printf "%s and %s are equal\n" sx sy
-      else printf "%s and %s are not equal\n" sx sy
+      then printf "%s and %s are equal\n" (show x) (show y)
+      else printf "%s and %s are not equal\n" (show x) (show y)
 
-
-bar :: ( ShowIO a) => a -> IO ()
+bar :: (Show a) => a -> IO ()
 bar x =
-  do
-    sx <- showIO x
-    printf "Got: %s\n" sx
+  let sx = show x
+   in printf "Got string of len: %d, contents: %s.\n" (length sx) sx

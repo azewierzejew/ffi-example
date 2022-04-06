@@ -1,3 +1,5 @@
+(** OCaml implementation for foreign stubs. *)
+
 module type Show = sig
   type t
 

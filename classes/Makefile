@@ -2,8 +2,9 @@ PROG=test
 DEPS=dep_haskell.d dep_c.d dep_ocaml.d
 HASKELL_FILES=$(wildcard *.hs)
 C_FILES=$(wildcard *.c)
+CXX_FILES=$(wildcard *.cpp)
 OCAML_FILES=stub_ml.mli stub_ml.ml usage.ml
-OBJECT_FILES=$(C_FILES:.c=.o) $(HASKELL_FILES:.hs=.o) ocaml_object.o
+OBJECT_FILES=$(C_FILES:.c=.o) $(CXX_FILES:.cpp=.o) $(HASKELL_FILES:.hs=.o) ocaml_object.o
 
 .PHONY: all clean
 
@@ -15,11 +16,11 @@ all: $(PROG)
 %.o: %.c
 	gcc -c -std=c11 -Wall -Wextra -o $@ $< -I `ocamlc -where` -I /usr/lib/ghc-9.0.2/include
 
+%.o: %.cpp
+	g++ -c -std=c++17 -Wall -Wextra -o $@ $< -I `ocamlc -where` -I /usr/lib/ghc-9.0.2/include
+
 ocaml_object.o: $(OCAML_FILES)
 	ocamlopt -output-obj -o $@ $^
-
-camlruntime.a: $(OCAML_FILES)
-	cp `ocamlopt -where`/libasmrun.a $@
 
 clean:
 	-rm -f *.o
@@ -51,7 +52,7 @@ endif
 $(PROG): $(OBJECT_FILES)
 	@echo Linking program.
 	@echo Linked files: $^
-	@gcc \
+	@g++ \
 	-Wl,--no-as-needed \
 	-no-pie \
 	-fno-PIC \
