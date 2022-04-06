@@ -49,16 +49,16 @@ let _ =
   let y = 7 in
   let a = 1.0 in
   let b = 3.5 in
-  foo (module Integer) (module Integer) x y;
-  foo (module Integer) (module Integer) x x;
+  foo (module Integer) x y;
+  foo (module Integer) x x;
   (* The following doesn't work *)
   (* foo (module Integer) (module Integer) a y; *)
-  foo (module Float) (module Float) a b;
-  foo (module Float) (module Float) a a;
+  foo (module Float) a b;
+  foo (module Float) a a;
   bar (module Integer) x;
   bar (module Integer) y;
   bar (module Float) a;
   bar (module Float) b;
-  foo (module String) (module String) "Hello" "world";
+  foo (module String) "Hello" "world";
   bar (module String) "Hello world";
   ()

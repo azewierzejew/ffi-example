@@ -12,9 +12,14 @@ module type Eq = sig
   val eq : t -> t -> bool
 end
 
+module type ShowEq = sig
+  include Show
+
+  include Eq with type t := t
+end
+
 val foo :
-  (module Show with type t = 't) ->
-  (module Eq with type t = 't) ->
+  (module ShowEq with type t = 't) ->
   't ->
   't ->
   unit
