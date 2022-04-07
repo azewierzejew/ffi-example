@@ -1,12 +1,8 @@
 #include "stub.h"
 #include "StubHaskell_stub.h"
 
-void foo_C_stub(struct show_eq_object x, struct show_eq_object y)
-{
+void foo_C_stub(struct show_eq_object x, struct show_eq_object y) {
     fooHaskellStub(&x, &y);
 }
 
-void bar_C_stub(struct show_object x)
-{
-    barHaskellStub(&x);
-}
+void bar_C_stub(struct show_object x) { barHaskellStub(&x); }

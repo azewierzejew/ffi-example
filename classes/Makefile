@@ -14,10 +14,10 @@ all: $(PROG)
 	ghc -c -no-keep-hi-files $<
 
 %.o: %.c
-	gcc -c -std=c11 -Wall -Wextra -o $@ $< -I `ocamlc -where` -I /usr/lib/ghc-9.0.2/include
+	gcc -c -std=gnu11 -Wall -Wextra -o $@ $< -I `ocamlc -where` -I /usr/lib/ghc-9.0.2/include
 
 %.o: %.cpp
-	g++ -c -std=c++17 -Wall -Wextra -o $@ $< -I `ocamlc -where` -I /usr/lib/ghc-9.0.2/include
+	g++ -c -std=gnu++17 -Wall -Wextra -o $@ $< -I `ocamlc -where` -I /usr/lib/ghc-9.0.2/include
 
 ocaml_object.o: $(OCAML_FILES)
 	ocamlopt -output-obj -o $@ $^
