@@ -25,7 +25,7 @@ bool eq_test(uintptr_t *x, uintptr_t *y) {
 int main(int argc, char **argv) {
 
     RtsConfig rts_config = defaultRtsConfig;
-    rts_config.rts_opts = "-V0";
+    rts_config.rts_opts = "-V0 --install-signal-handlers=no";
     hs_init_ghc(&argc, &argv, rts_config);
 
     struct show_object a = {.show = (show_t)show_test,

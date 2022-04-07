@@ -1,7 +1,9 @@
 // C implementation for foreign stubs.
 
 #include "stub.h"
+#define _Atomic
 #include <caml/alloc.h>
+#undef _Atomic
 #include <caml/callback.h>
 #include <caml/custom.h>
 #include <caml/memory.h>
