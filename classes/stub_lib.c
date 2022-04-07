@@ -35,7 +35,9 @@ alloc_string_ptr alloc_string_new(size_t size, const char *const_data) {
     return result;
 }
 
-size_t alloc_string_get_size(alloc_string_ptr string) { return string->size; }
+size_t alloc_string_get_size(alloc_string_ptr string) {
+    return string->size;
+}
 
 peek_data_t alloc_string_peek(alloc_string_ptr string, size_t byte_offset) {
     uint64_t result = le64toh(*(const peek_data_t *)&string->data[byte_offset]);

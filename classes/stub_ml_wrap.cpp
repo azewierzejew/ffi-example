@@ -18,7 +18,9 @@ struct raw_data {
         caml_register_generational_global_root(&val);
     }
 
-    ~raw_data() { caml_remove_generational_global_root(&val); }
+    ~raw_data() {
+        caml_remove_generational_global_root(&val);
+    }
 };
 
 struct show_data {
@@ -30,7 +32,9 @@ struct show_data {
         caml_register_generational_global_root(&show);
     }
 
-    ~show_data() { caml_remove_generational_global_root(&show); }
+    ~show_data() {
+        caml_remove_generational_global_root(&show);
+    }
 };
 
 struct eq_data {
@@ -42,7 +46,9 @@ struct eq_data {
         caml_register_generational_global_root(&eq);
     }
 
-    ~eq_data() { caml_remove_generational_global_root(&eq); }
+    ~eq_data() {
+        caml_remove_generational_global_root(&eq);
+    }
 };
 
 struct show_eq_data {
@@ -54,7 +60,9 @@ struct show_eq_data {
         caml_register_generational_global_root(&show);
     }
 
-    ~show_eq_data() { caml_remove_generational_global_root(&show); }
+    ~show_eq_data() {
+        caml_remove_generational_global_root(&show);
+    }
 };
 
 alloc_string_ptr show_show_eq(struct show_eq_data **data) {

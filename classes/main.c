@@ -18,7 +18,9 @@ alloc_string_ptr show_test(uintptr_t *x) {
 }
 
 // Implementation of Eq for unboxed integers.
-bool eq_test(uintptr_t *x, uintptr_t *y) { return *x == *y; }
+bool eq_test(uintptr_t *x, uintptr_t *y) {
+    return *x == *y;
+}
 
 int main(int argc, char **argv) {
 
